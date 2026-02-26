@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="result-container">
+  <div class="result-card">
+    <h2 class="result-title">{{ module_name }}</h2>
+
+    {% set status_class = "status-safe" if status in ["Safe", "Real"] else
+       "status-danger" if status in ["Fake", "Dangerous"] else "" %}
+
+    <div class="result-metrics">
+      <div class="metric">
+        <span class="metric-label">Status</span>
+        <span class="metric-value {{ status_class }}">{{ status }}</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Risk score</span>
+        <span class="metric-value">{{ risk }} / 100</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Confidence</span>
+        <span class="metric-value">{{ confidence }}%</span>
+      </div>
+    </div>
+
+    {% if media_type and media_file %}
+    <div class="result-details">
+      <h3>Input preview</h3>
+      {% if media_type == "image" %}
+      <img
+        src="{{ url_for('uploaded_file', filename=media_file) }}"
+        alt="Uploaded image"
+        style="max-width: 100%; border-radius: 12px; border: 1px solid rgba(179,157,219,0.5); margin-bottom: 1rem;"
+      />
+      {% elif media_type == "video" %}
+      <video
+        controls
+        style="max-width: 100%; border-radius: 12px; border: 1px solid rgba(179,157,219,0.5); margin-bottom: 1rem;"
+      >
+        <source src="{{ url_for('uploaded_file', filename=media_file) }}" />
+        Your browser does not support the video tag.
+      </video>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="result-details">
+      <h3>Explanation</h3>
+      <pre>{{ details }}</pre>
+    </div>
+
+    {% if heatmap_file %}
+    <div class="result-details">
+      <h3>Heatmap (model attention)</h3>
+      <img
+        src="{{ url_for('uploaded_file', filename=heatmap_file) }}"
+        alt="Deepfake heatmap"
+        style="max-width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);"
+      />
+    </div>
+    {% endif %}
+
+    {% if frame_probs %}
+    <div class="result-details">
+      <h3>Frame-by-frame probabilities (sampled)</h3>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr>
+              <th style="text-align:left; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.12);">Frame</th>
+              <th style="text-align:left; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.12);">Time (s)</th>
+              <th style="text-align:left; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.12);">Deepfake prob</th>
+              {% if frame_probs and (frame_probs[0].xception is defined or frame_probs[0].convnext is defined) %}
+              <th style="text-align:left; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.12);">Xception</th>
+              <th style="text-align:left; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.12);">ConvNeXt</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for fp in frame_probs %}
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);">{{ fp.frame }}</td>
+              <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);">{{ fp.time_s }}</td>
+              <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);">{{ fp.prob }}</td>
+              {% if fp.xception is defined or fp.convnext is defined %}
+              <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);">{{ fp.xception if fp.xception is defined else "" }}</td>
+              <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);">{{ fp.convnext if fp.convnext is defined else "" }}</td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="result-actions">
+      <a href="{{ url_for('index') }}" class="secondary-btn">Back</a>
+    </div>
+  </div>
+</section>
+
+{% if prefill_text %}
+<script>
+  // Prefill SMS textbox on the home page after OCR/SMS analysis.
+  // Stored in sessionStorage so it survives the Back click.
+  sessionStorage.setItem("hfs_sms_prefill", {{ prefill_text | tojson }});
+</script>
+{% endif %}
+{% endblock %}

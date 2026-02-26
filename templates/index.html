@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="landing-container">
+  <form
+    class="analysis-form"
+    method="POST"
+    action="{{ url_for('analyze') }}"
+    enctype="multipart/form-data"
+  >
+    <div class="input-group">
+      <input
+        type="text"
+        name="user_input"
+        id="user-input"
+        placeholder="Enter URL or message text..."
+        class="large-input"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="file-group">
+      <label class="file-upload-label">
+        <span>Choose a File</span>
+        <input
+          type="file"
+          name="file"
+          id="file-input"
+          accept=".png,.jpg,.jpeg,.gif,.wav,.mp3,.flac,.m4a,.ogg,.mp4,.avi,.mov,.mkv"
+        />
+      </label>
+      <span id="file-name" class="file-name"></span>
+    </div>
+
+    <div
+      class="image-mode-group"
+      id="image-mode-group"
+      style="display: none"
+    >
+      <span class="image-mode-label">For image, choose analysis:</span>
+      <div class="image-mode-buttons">
+        <button
+          type="submit"
+          name="image_mode"
+          value="deepfake"
+          class="secondary-btn"
+        >
+          DEEPFAKE
+        </button>
+        <button
+          type="submit"
+          name="image_mode"
+          value="sms"
+          class="secondary-btn"
+        >
+          SMS CHECKER
+        </button>
+      </div>
+    </div>
+
+    <div class="submit-group" id="default-submit-group">
+      <button type="submit" class="primary-btn">Analyze</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

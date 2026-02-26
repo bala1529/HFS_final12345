@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="static-page">
+  <h2>Notes</h2>
+  <h3>URL Checker</h3>
+  <ul>
+    <li>Enter a full link (including <code>http://</code> or <code>https://</code>) in the text box.</li>
+    <li>Click <strong>Analyze</strong> with no file selected.</li>
+    <li>The system checks the URL using VirusTotal and other heuristics and returns a risk score and explanation.</li>
+  </ul>
+
+  <h3>SMS Checker</h3>
+  <ul>
+    <li>Paste suspicious SMS / WhatsApp / email text in the box and click <strong>Analyze</strong>.</li>
+    <li>Risk is based on patterns commonly seen in phishing, lottery scams, fake job offers, etc.</li>
+    <li>You can also upload a screenshot and choose <strong>SMS CHECKER</strong> from the image options; HFS runs OCR first and then analyses the extracted text.</li>
+  </ul>
+
+  <h3>AI Voice Analyser</h3>
+  <ul>
+    <li>Upload an audio file (<code>.wav</code>, <code>.mp3</code>, <code>.m4a</code>, etc.).</li>
+    <li>The model estimates spoof / deepfake likelihood and shows a risk score.</li>
+    <li>Use this as an extra signal alongside caller‑ID and common‑sense checks.</li>
+  </ul>
+
+  <h3>Deepfake Image Detector</h3>
+  <ul>
+    <li>Select an image file and choose <strong>DEEPFAKE</strong> in the image options.</li>
+    <li>The system runs multiple models to estimate if the face or scene might be AI‑generated or manipulated.</li>
+    <li>The result page shows the input image, risk score, and model explanation (and heatmaps when available).</li>
+  </ul>
+
+  <h3>Deepfake Video Detector</h3>
+  <ul>
+    <li>Upload a video file (<code>.mp4</code>, <code>.mov</code>, etc.).</li>
+    <li>HFS samples frames across the clip, analyses them, and averages the predictions.</li>
+    <li>The result page lists frame‑by‑frame probabilities plus an overall risk and, when possible, a heatmap.</li>
+  </ul>
+
+  <h3>Feedback</h3>
+  <ul>
+    <li>Open the <strong>Feedback</strong> tab from the menu.</li>
+    <li>Provide a valid email address and a short message.</li>
+    <li>Your message is sent to the HFS team for review; do not include passwords or sensitive financial data.</li>
+  </ul>
+</section>
+{% endblock %}

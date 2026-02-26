@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HFS</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{{ url_for('static', filename='images/favicon.ico') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <header class="hfs-header">
+      <div class="logo-title-container">
+        <a href="{{ url_for('index') }}" class="logo-link">
+          <img
+            src="{{ url_for('static', filename='images/logo.png') }}"
+            alt="HFS Logo"
+            class="hfs-logo"
+          />
+        </a>
+        <div class="hfs-title">HUNT FOR SOLUTION</div>
+      </div>
+      <div class="menu-wrapper">
+        <button class="menu-trigger" id="menu-trigger" aria-label="Menu">
+          &#9776;
+        </button>
+        <div class="menu-dropdown" id="menu-dropdown">
+          <a href="{{ url_for('index') }}">Home</a>
+          <a href="{{ url_for('disclaimer') }}">Disclaimer</a>
+          <a href="{{ url_for('notes') }}">Notes</a>
+          <a href="{{ url_for('feedback') }}">Feedback</a>
+          <a href="{{ url_for('contact') }}">Contact Us</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="hfs-main">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>
