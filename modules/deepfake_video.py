@@ -5,54 +5,11 @@ from typing import Any
 
 import cv2
 import torch
-from efficientnet_pytorch import EfficientNet
-from torch import nn
 
 from . import deepfake_image as di
-from .deepfake_image import _create_xception_model, _load_forgiving
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODELS_DIR = BASE_DIR / "models"
-
-_EFFICIENTNET: nn.Module | None = None
-_XCEPTION: nn.Module | None = None
-
-
-def _load_model() -> None:
-    global _EFFICIENTNET, _XCEPTION
-    if _EFFICIENTNET is not None:
-        return
-
-    # Match the EfficientNet variant and number of classes used for the
-    # image checkpoint (B4, 2 classes: real / fake).
-    model_name = "efficientnet-b4"
-    _EFFICIENTNET = EfficientNet.from_name(model_name, num_classes=2)
-
-    efficientnet_ckpt = MODELS_DIR / "efficientnet_model.pth"
-    if not efficientnet_ckpt.exists():
-        efficientnet_ckpt = MODELS_DIR / "deepfake_video_efficientnet.pth"
-
-    if efficientnet_ckpt.exists():
-        _load_forgiving(
-            _EFFICIENTNET,
-            efficientnet_ckpt,
-            prefixes=("module.", "backbone.efficientnet.", "backbone."),
-        )
-
-    _XCEPTION = None
-    xception_ckpt = MODELS_DIR / "xception_model.pth"
-    if xception_ckpt.exists():
-        _XCEPTION = _create_xception_model()
-        if _XCEPTION is not None:
-            _load_forgiving(
-                _XCEPTION,
-                xception_ckpt,
-                prefixes=("module.", "backbone.xception.", "backbone."),
-            )
-
-    _EFFICIENTNET.eval()
-    if _XCEPTION is not None:
-        _XCEPTION.eval()
 
 
 def _sample_frames(video_path: Path, num_frames: int = 24):
@@ -79,9 +36,10 @@ def _sample_frames(video_path: Path, num_frames: int = 24):
 def analyze_video(video_path: Path) -> dict:
     """
     Analyze a video for deepfake likelihood by sampling frames.
+    Uses the same detector stack as the image analyser (ViT + optional
+    Xception/ConvNeXt if weights are provided).
     """
     try:
-        _load_model()
         frames = _sample_frames(video_path)
         if not frames:
             raise RuntimeError("No frames could be sampled from video.")
